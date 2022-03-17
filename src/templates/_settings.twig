@@ -1,0 +1,20 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.autosuggestField({
+	label: 'Access Token ID',
+	name: 'accessTokenId',
+	instructions: 'Visit the [Mux Access Tokens](https://dashboard.mux.com/settings/access-tokens) settings to create your Access Token ID'|md,
+	required: true,
+	first: true,
+	suggestEnvVars: true,
+	value: settings.accessTokenId,
+}) }}
+
+{{ forms.autosuggestField({
+	label: 'Secret Key',
+	name: 'secretKey',
+	instructions: 'Visit the [Mux Access Tokens](https://dashboard.mux.com/settings/access-tokens) settings to create your Secret Key'|md,
+	required: true,
+	suggestEnvVars: true,
+	value: settings.secretKey,
+}) }}

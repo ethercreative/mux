@@ -1,0 +1,29 @@
+{
+  "name": "ether/mux",
+  "description": "Automatically generate Mux videos from Craft CMS assets",
+  "version": "0.0.1",
+  "type": "craft-plugin",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "require": {
+    "craftcms/cms": "^3.7",
+    "muxinc/mux-php": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "ether\\mux\\": "src/"
+    }
+  },
+  "support": {
+    "source": "https://github.com/ethercreative/mux",
+    "issues": "https://github.com/ethercreative/mux/issues"
+  },
+  "extra": {
+    "handle": "mux",
+    "name": "Mux",
+    "developer": "Ether Creative",
+    "developerUrl": "https://ethercreative.co.uk",
+    "class": "ether\\mux\\Mux",
+    "schemaVersion": "0.0.1"
+  }
+}
