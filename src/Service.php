@@ -18,6 +18,14 @@ class Service extends Component
 
 	public function createMuxFromAsset (Asset $asset)
 	{
+		$exists = (new Query())
+			->from(Mux::MUX_ASSETS_TABLE)
+			->where(['assetId' => $asset->id])
+			->exists();
+
+		if ($exists || empty($asset->getUrl()))
+			return;
+
 		$input = new InputSettings([
 			'url' => $asset->getUrl(),
 		]);

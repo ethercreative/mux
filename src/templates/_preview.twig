@@ -1,0 +1,30 @@
+{% import "_includes/forms" as forms %}
+
+{% js 'https://cdn.jsdelivr.net/npm/hls.js@latest' %}
+{% js %}
+const video = document.getElementById('muxPreview');
+
+if (video.canPlayType('application/vnd.apple.mpegurl')) {
+	video.src = '{{ playbackUrl }}';
+} else if (Hls.isSupported()) {
+	// This will run in all other modern browsers
+	hls = new Hls();
+	hls.loadSource('{{ playbackUrl }}');
+	hls.attachMedia(video);
+} else {
+	console.error('This is an old browser that does not support MSE https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API');
+}
+{% endjs %}
+
+{% set player %}
+	<video
+		id="muxPreview"
+		poster="{{ thumbnailUrl }}"
+		controls
+		style="max-width:100%;border-radius:4px"
+	></video>
+{% endset %}
+
+{{ forms.field({
+	label: 'Mux Stream Preview',
+}, player) }}

@@ -17,6 +17,10 @@ use Twig\Error\SyntaxError;
 use yii\base\Event;
 use yii\base\Exception;
 
+// TODO:
+//   - Handle re-upload of files
+//   - Support enabling on a per-volume basis
+
 /**
  * @property Service $mux
  */
@@ -51,6 +55,8 @@ class Mux extends Plugin
 			TypeManager::EVENT_DEFINE_GQL_TYPE_FIELDS,
 			[$this, 'onDefineGqlTypeFields']
 		);
+
+		Craft::$app->getView()->hook('cp.assets.edit.content', [$this, 'injectMuxVideoPreview']);
 	}
 
 	// Settings
@@ -97,7 +103,11 @@ class Mux extends Plugin
 		if ($asset->kind !== 'video')
 			return;
 
-		$this->mux->createMuxFromAsset($asset);
+		try {
+			$this->mux->createMuxFromAsset($asset);
+		} catch (\Exception $e) {
+			Craft::error($e->getMessage(), 'Mux');
+		}
 	}
 
 	public function onAfterAssetDelete (Event $event)
@@ -105,10 +115,14 @@ class Mux extends Plugin
 		/** @var Asset $asset */
 		$asset = $event->sender;
 
-		if (!strpos($asset->getMimeType(), 'video'))
+		if ($asset->kind !== 'video')
 			return;
 
-		$this->mux->deleteMuxFromAsset($asset);
+		try {
+			$this->mux->deleteMuxFromAsset($asset);
+		} catch (\Exception $e) {
+			Craft::error($e->getMessage(), 'Mux');
+		}
 	}
 
 	public function onDefineGqlTypeFields (DefineGqlTypeFieldsEvent $event)
@@ -133,6 +147,28 @@ class Mux extends Plugin
 				return $self->mux->getThumbnailUrl($source);
 			},
 		];
+	}
+
+	/**
+	 * @throws SyntaxError
+	 * @throws RuntimeError
+	 * @throws Exception
+	 * @throws LoaderError
+	 */
+	public function injectMuxVideoPreview (array &$context): string
+	{
+		/** @var Asset $asset */
+		$asset = $context['element'];
+
+		if ($asset->kind !== 'video')
+			return '';
+
+		$view = Craft::$app->getView();
+
+		return $view->renderTemplate('mux/_preview', [
+			'playbackUrl' => $this->mux->getPlaybackUrl($asset),
+			'thumbnailUrl' => $this->mux->getThumbnailUrl($asset),
+		]);
 	}
 
 }
